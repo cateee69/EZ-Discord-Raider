@@ -37,7 +37,7 @@ class DiscordRaid():
 
 
 def bot_inviter(link, token):
-	apilink = "https://discordapp.com/api/v6/invite/" + link
+	apilink = f"https://discordapp.com/api/v6/invite/{link}"
 	headers={'Authorization': token}
 	bot_invite = requests.post(apilink, headers=headers)
 	print(bot_invite.text)
@@ -58,9 +58,7 @@ def main():
 	tokens = []
 	with open("tokens.txt", "r") as tokens_file:
 		lines = tokens_file.readlines()
-		for l in lines:
-			tokens.append(l.replace('\n', ''))
-
+		tokens.extend(l.replace('\n', '') for l in lines)
 	invite_bot = input("[!] Mass invite all discord tokens to server? y/n > ")
 
 	if invite_bot == "y":
@@ -70,7 +68,7 @@ def main():
 		counts = 1
 		for botz in tokens:
 				bot_inviter(link,botz)
-				
+
 	channel_id  = int(input("[!] Enter ID of the channel you want to raid >"))
 
 
@@ -100,13 +98,18 @@ def main():
 	print('[*] ~ TOKEN INFORMATION ~ \n')
 
 	main_loop = asyncio.new_event_loop()
-	bot_count = 1 
-	new_var = {}
-
-
-	for i, input_token in zip(range(len(tokens)), tokens):
-		new_var[i] = DiscordRaid(input_token, loop=main_loop, bot_count= bot_count, channel_spam= channel_id, messages_to_spam= messages_to_spam)
-		bot_count += 1
+	new_var = {
+	    i: DiscordRaid(
+	        input_token,
+	        loop=main_loop,
+	        bot_count=bot_count,
+	        channel_spam=channel_id,
+	        messages_to_spam=messages_to_spam,
+	    )
+	    for bot_count, (
+	        i,
+	        input_token) in enumerate(zip(range(len(tokens)), tokens), start=1)
+	}
 
 
 	for z in range(len(tokens)):

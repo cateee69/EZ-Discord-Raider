@@ -2,7 +2,7 @@ import requests
 
 def bot_leaver(guild_id, token):
     headers={'Authorization': token}
-    apilink = "https://discord.com/api/v8/users/@me/guilds/" + guild_id
+    apilink = f"https://discord.com/api/v8/users/@me/guilds/{guild_id}"
     r = requests.delete(apilink, headers=headers)
     print("[!] Left server ")
 
@@ -11,9 +11,7 @@ def main():
 
     with open("tokens.txt", "r") as tokens_file:
         lines = tokens_file.readlines()
-        for l in lines:
-            tokens.append(l.replace('\n', ''))
-
+        tokens.extend(l.replace('\n', '') for l in lines)
     guild_id = input('[!] Enter server ID: ')
 
 
